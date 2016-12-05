@@ -1,0 +1,36 @@
+{
+  "name": "ios-mobileprovision-finder",
+  "version": "1.0.0",
+  "description": "API to find an iOS mobile provision",
+  "main": "index.js",
+  "scripts": {
+    "prepublish": "tsc && pegjs parsers/security-find-identity.pegjs && pegjs parsers/security-find-certificate.pegjs",
+    "test": "tsc && mocha",
+    "dev-test-watch": "mocha-typescript-watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NativeScript/ios-mobileprovision-finder.git"
+  },
+  "author": "",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/NativeScript/ios-mobileprovision-finder/issues"
+  },
+  "homepage": "https://github.com/NativeScript/ios-mobileprovision-finder#readme",
+  "devDependencies": {
+    "@types/chalk": "^0.4.31",
+    "@types/node": "0.0.2",
+    "@types/yargs": "^6.3.3",
+    "mocha": "^3.2.0",
+    "mocha-typescript": "^1.0.11",
+    "pegjs": "^0.10.0",
+    "typescript": "^2.0.10"
+  },
+  "dependencies": {
+    "chalk": "^1.1.3",
+    "plist": "^2.0.1",
+    "yargs": "^6.5.0"
+  },
+  "bin": "./ios-mobileprovision-finder.js"
+}
