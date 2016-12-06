@@ -31,6 +31,8 @@ eligable:
 Read the public API from index.d.ts and the ios-mobileprovision-finder.ts command line tool for example.
 
 ``` TypeScript
+import { provision, cert } from "./index";
+
 const certificates = cert.read();
 const provisionProfiles = provision.read();
 const result = provision.select(provisionProfiles, {
