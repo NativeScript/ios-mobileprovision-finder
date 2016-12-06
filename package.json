@@ -1,6 +1,6 @@
 {
   "name": "ios-mobileprovision-finder",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "API to find an iOS mobile provision",
   "main": "index.js",
   "scripts": {
