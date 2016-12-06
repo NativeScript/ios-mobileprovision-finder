@@ -174,7 +174,10 @@ export namespace cert {
         pem: string;
     }
 
-    export function read(): { valid: Certificate[], invalid: Certificate[] } {
+    /**
+     * Read all codesigning sertificates using the 'security' tool from the default keychain search list.
+     */
+    export function read(): Result {
         const findIdentity = execSync("security find-identity -p codesigning").toString();
         const certIdentities = sec_find_id.parse(findIdentity);
 

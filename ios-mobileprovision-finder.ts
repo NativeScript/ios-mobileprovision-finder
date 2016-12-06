@@ -43,29 +43,17 @@ if (argv["team"]) {
     options.TeamName = argv["team"];
 }
 
-console.log("Reading certificates...");
-console.time("Read certificates");
 const certs = cert.read();
-console.timeEnd("Read certificates");
-
 options.Certificates = certs.valid;
-
-console.log("Reading provisioning profiles...");
-console.time("Read provisioning profiles");
 const profiles = provision.read();
-console.timeEnd("Read provisioning profiles");
-
-console.log("Margins provisioning profiles...");
-console.time("Matched provisioning profiles");
 const result = provision.select(profiles, options);
-console.timeEnd("Matched provisioning profiles");
 
 const months = ["Jan", "Feb", "Marc", "Apr", "May", "June", "July", "Aug", "Sept", "Oct", "Nov", "Dec"];
 function formatDate(date: Date): string {
     return `${date.getDay()} ${months[date.getMonth()]} ${date.getFullYear()}`;
 }
 function formatProfile(profile: provision.MobileProvision): string {
-    return "'" + chalk.bold(profile.Name) + "' " + profile.TeamName + " " + chalk.gray("(exp: " + formatDate(profile.ExpirationDate) + ") " + profile.UUID + ", id: ") + profile.Entitlements["application-identifier"] + chalk.gray(" " + profile.Type);
+    return "'" + chalk.bold(profile.Name) + "' " + profile.TeamName + " " + chalk.gray("(exp: " + formatDate(profile.ExpirationDate) + ") " + profile.UUID + " id: ") + profile.Entitlements["application-identifier"] + chalk.gray(" " + profile.Type);
 }
 console.log(chalk.bold("eligable:"));
 result.eligable.forEach(p => console.log(" - " + formatProfile(p)));
