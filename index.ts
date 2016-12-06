@@ -31,7 +31,7 @@ export namespace provision {
         /**
          * Developer certificate PEMs in base64 string format.
          */
-        DeveloperCertificates: Buffer[];
+        DeveloperCertificates: string[];
         Type: "Development" | "Distribution" | "AdHoc";
     }
 
@@ -136,7 +136,7 @@ export namespace provision {
         if (Certificates) {
             const validPemHeads: { [pemHead: string]: boolean } = {};
             Certificates.forEach(c => validPemHeads[c.pem.substr(0, 60)] = true);
-            chain(provision => provision.DeveloperCertificates.some(dc => validPemHeads[dc.toString('base64').substr(0, 60)]));
+            chain(provision => provision.DeveloperCertificates.some(dc => validPemHeads[dc.substr(0, 60)]));
         }
 
         filter = (test => provision => {

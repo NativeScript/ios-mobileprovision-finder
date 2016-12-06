@@ -1,4 +1,3 @@
-/// <reference types="node" />
 export declare namespace provision {
     interface MobileProvision {
         Name: string;
@@ -19,7 +18,7 @@ export declare namespace provision {
         /**
          * Developer certificate PEMs in base64 string format.
          */
-        DeveloperCertificates: Buffer[];
+        DeveloperCertificates: string[];
         Type: "Development" | "Distribution" | "AdHoc";
     }
     interface Query {
