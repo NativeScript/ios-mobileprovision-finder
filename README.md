@@ -1,5 +1,6 @@
-# ios-mobileprovision-finder
 API to find an iOS mobile provision
+
+[![Build Status](https://travis-ci.org/NativeScript/ios-mobileprovision-finder.svg?branch=master)](https://travis-ci.org/NativeScript/ios-mobileprovision-finder)
 
 ## Using as command line tool
 ```
