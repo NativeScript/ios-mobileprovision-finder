@@ -25,7 +25,8 @@ function print(result: provision.Result) {
     printNonEligable(result);
 }
 
-describe("api", () => {
+// These run end to end tests and depend on the keychain
+describe.skip("api", () => {
     describe("certificates", () => {
         it("list all", () => {
             const result = cert.read();
