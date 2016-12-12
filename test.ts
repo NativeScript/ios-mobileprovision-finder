@@ -81,7 +81,7 @@ describe("api", () => {
     });
 });
 
-describe.only("security find-identity parse", () => {
+describe("security find-identity parse", () => {
     it("none", () => {
         const result = identitiesParse(fs.readFileSync("./tests/find-identity/none-found.txt").toString());
         assert.deepEqual({ policy: 'Code Signing', matching: [], valid: [] }, result);
@@ -120,5 +120,13 @@ describe.only("security find-identity parse", () => {
                 { hash: '07AB20E16C86E2B548A91920B83EC27D78AFC7EB',
                 name: 'iPhone Developer: Panayot Cankov (3KZR3BE4ZD)' } ]
             }, result);
+    });
+});
+
+describe("security find-certificate parse", () => {
+    it("some", () => {
+        const result = certParse(fs.readFileSync("./tests/find-certificate/some-found.txt").toString());
+        const expected = JSON.parse(fs.readFileSync("./tests/find-certificate/some-found.expected.json").toString());
+        assert.deepEqual(result, expected);
     });
 });
