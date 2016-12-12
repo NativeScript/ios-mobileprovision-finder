@@ -10,7 +10,7 @@ MatchingIdentities = WS 'Matching identities' NL identities:Identity* MatchingId
 ValidIdentities = WS 'Valid identities only' NL identities:Identity* count:MatchingValidIdentitiesCount { return identities };
 Identity = WS Number ')' WS hash:Hash WS name:Name issue:Issue? NL { return issue ? { hash, name, issue } : { hash, name }}
 
-Number = $[1-9][0-9]*
+Number = $[1-9][0-9]* / '0'
 Hash = $[0-9a-fA-F]*
 Name = '"' literal:$[^'"']* '"' { return literal; }
 Issue = WS '(' code:$[^)]* ')' { return code; }
