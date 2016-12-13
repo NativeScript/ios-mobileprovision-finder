@@ -1,3 +1,4 @@
+/// <reference types="node" />
 export declare namespace provision {
     interface MobileProvision {
         Name: string;
@@ -40,11 +41,14 @@ export declare namespace provision {
         nonEligable: MobileProvision[];
     }
     /**
-     * Read all provisioning profiles from the target directory.
-     * If the path is not specified reads from ~/Library/MobileDevice/Provisioning Profiles/
+     * Read all provisioning profiles.
      */
-    function read(path?: string): MobileProvision[];
+    function read({readdirSync, readFileSync}?: FileSystem): MobileProvision[];
     function select(mobileprovisions: MobileProvision[], {ExpirationDate, TeamName, AppId, ProvisionedDevices, Type, Certificates}: Query): Result;
+    interface FileSystem {
+        readdirSync(path: string): string[];
+        readFileSync(path: string): Buffer;
+    }
 }
 export declare namespace cert {
     interface Result {

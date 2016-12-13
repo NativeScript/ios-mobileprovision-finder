@@ -5,9 +5,9 @@ import { provision, cert } from "./index";
 import * as chalk from "chalk";
 
 const argv = yargs
-    .usage('Usage: $0 -u [device uuid] -i [app bundle id]')
-    .option("uuid", { string: true, array: true, describe: "Provide one or more device UUIDs the searched provisioning profile should be able to deploy to." })
-    .alias('u', 'uuid')
+    .usage('Usage: $0 -u [device udid] -i [app bundle id]')
+    .option("udid", { string: true, array: true, describe: "Provide one or more device UUIDs the searched provisioning profile should be able to deploy to." })
+    .alias('u', 'udid')
     .option("app-id", { string: true, array: false, describe: "Provide application bundle identifier the searched provisioning profile should match." })
     .alias('i', 'app-id')
     .option('eligable', { boolean: true, array: false, describe: "Prints only eligable profiles", default: false })
@@ -23,7 +23,7 @@ const argv = yargs
 // console.log(argv);
 
 const options: provision.Query = {};
-if (argv.uuid) {
+if (argv.udid) {
     options.ProvisionedDevices = argv.uuid
 }
 

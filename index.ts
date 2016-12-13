@@ -1,10 +1,12 @@
-import * as fs from "fs";
-import {extname, join} from "path";
+import { readdirSync, readFileSync } from "fs";
+import { extname, join} from "path";
 import * as plist from "plist";
 import { execSync } from "child_process";
 
 import * as sec_find_id from "./parsers/security-find-identity";
 import * as sec_find_cert from "./parsers/security-find-certificate";
+
+const nodefs: provision.FileSystem = { readdirSync, readFileSync };
 
 export namespace provision {
 
@@ -70,17 +72,15 @@ export namespace provision {
     }
 
     /**
-     * Read all provisioning profiles from the target directory.
-     * If the path is not specified reads from ~/Library/MobileDevice/Provisioning Profiles/
+     * Read all provisioning profiles.
      */
-    export function read(path: string = defaultPath): MobileProvision[] {
-        return fs
-            .readdirSync(path)
+    export function read({readdirSync, readFileSync}: FileSystem = nodefs): MobileProvision[] {
+        return readdirSync(defaultPath)
             .filter(file => extname(file) === ".mobileprovision")
             .map<MobileProvision>(file => {
                 try {
-                    const filePath = join(path, file);
-                    const fileContent = fs.readFileSync(filePath);
+                    const filePath = join(defaultPath, file);
+                    const fileContent = readFileSync(filePath);
                     const plistStart = fileContent.indexOf(plistStartToken);
                     const plistEnd = fileContent.indexOf(plistEndToken) + plistEndToken.length;
                     if (plistStart >= 0 && plistStart < plistEnd) {
@@ -151,6 +151,11 @@ export namespace provision {
             (filter(next) ? acc.eligable : acc.nonEligable).push(next);
             return acc;
         }, { eligable: [], nonEligable: [] });
+    }
+
+    export interface FileSystem {
+        readdirSync(path: string): string[]
+        readFileSync(path: string): Buffer;
     }
 }
 

@@ -1,10 +1,13 @@
 import * as fs from "fs";
+import * as path from "path";
+import { readdirSync, readFileSync } from "fs";
 import { provision, cert } from "./index";
 import { parse as certParse } from "./parsers/security-find-certificate";
 import { parse as identitiesParse } from "./parsers/security-find-identity";
+import * as chai from "chai";
+import * as spies from "chai-spies";
 import { assert } from "chai";
-
-declare var describe, it;
+chai.use(spies);
 
 function printProfile(profile: provision.MobileProvision) {
     console.log(` - ${profile.Name} (${profile.TeamName}) ${profile.Entitlements["application-identifier"]} ${profile.Type} ${profile.UUID}`);
@@ -25,7 +28,7 @@ function print(result: provision.Result) {
     printNonEligable(result);
 }
 
-// These run end to end tests and depend on the keychain
+// These run end to end tests and run security tool and depend on the keychain, they will run only on mac. Consider running them during development.
 describe.skip("api", () => {
     describe("certificates", () => {
         it("list all", () => {
@@ -130,4 +133,89 @@ describe("security find-certificate parse", () => {
         const expected = JSON.parse(fs.readFileSync("./tests/find-certificate/some-found.expected.json").toString());
         assert.deepEqual(result, expected);
     });
+});
+
+describe("provision", function() {
+    it("looks at the default path", () => {
+        let fs: provision.FileSystem = {
+            readdirSync(dir: string) {
+                assert(dir.endsWith("Library/MobileDevice/Provisioning Profiles/"));
+                return [];
+            },
+            readFileSync(path: string) { return null; }
+        }
+        const spy = chai.spy(fs.readdirSync);
+        fs.readdirSync = spy;
+        provision.read(fs);
+
+        chai.expect(spy).called.exactly(1);
+    });
+
+    let testfsMac1: provision.FileSystem;
+
+    before(() => {
+        testfsMac1 = {
+            readdirSync(dir: string) {
+                return readdirSync("./tests/provisioning/mac1/");
+            },
+            readFileSync(filePath: string) {
+                return readFileSync(path.join("./tests/provisioning/mac1", path.basename(filePath)));
+            }
+        };
+    });
+
+    it("read the plist files from the plists directory", () => {
+        const profiles = provision.read(testfsMac1);
+        assert.equal(profiles.length, 2);
+
+        const first = profiles[0];
+        assert.equal(first.TeamName, "Telerik A D");
+        assert.equal(first.UUID, "3aa58a65-f8da-4c67-ZZZZ-ZZZZZZZZZZZZ");
+        assert.equal(first.Type, "Development");
+        assert.deepEqual(first.TeamIdentifier, [ "CHSQ3M3P37" ]);
+        assert.equal(first.ProvisionedDevices.length, 80);
+        assert(first.ProvisionedDevices.some(udid => udid === "c0f5ffad********************************"));
+        assert(first.DeveloperCertificates.some(cert => cert.toString().startsWith("MIIFmTCCBIGgAwIBAgIICS/7/s0P8fMwDQYJKoZIhvcNAQELBQAwgZYxCzAJ")));
+
+        const second = profiles[1];
+        assert.equal(second.TeamName, "Telerik AD");
+        assert.equal(second.UUID, "bb53a533-e88d-470f-ZZZZ-ZZZZZZZZZZZZ");
+        assert.equal(second.Type, "Development");
+        assert.deepEqual(second.TeamIdentifier, [ "W7TGC3P93K" ]);
+        assert.equal(second.ProvisionedDevices.length, 59);
+        assert(second.ProvisionedDevices.some(udid => udid === "d39c73c7********************************"));
+        assert(second.DeveloperCertificates.some(cert => cert.toString().startsWith("MIIFmDCCBICgAwIBAgIIcZcoImBSvQcwDQYJKoZIhvcNAQELBQAwgZYxCzAJ")));
+    });
+
+    it("can find profiles for devices", () => {
+        const profiles = provision.read(testfsMac1);
+        const result = provision.select(profiles, {
+            ProvisionedDevices: ["c0f5ffad********************************"]
+        });
+        assert.equal(result.eligable.length, 1);
+        assert.equal(result.eligable[0].UUID, "3aa58a65-f8da-4c67-ZZZZ-ZZZZZZZZZZZZ");
+        assert.equal(result.nonEligable.length, 1);
+    });
+
+    it("can find profiles for certificate", () => {
+        const profiles = provision.read(testfsMac1);
+        const result = provision.select(profiles, {
+            Certificates: [ { pem: "MIIFmDCCBICgAwIBAgIIcZcoImBSvQcwDQYJKoZIhvcNAQELBQAwgZYxCzAJ" } ]
+        });
+        assert.equal(result.eligable.length, 1);
+        assert.equal(result.eligable[0].UUID, "bb53a533-e88d-470f-ZZZZ-ZZZZZZZZZZZZ");
+        assert.equal(result.nonEligable.length, 1);
+    });
+
+    it("can find profiles by app id", () => {
+        const profiles = provision.read(testfsMac1);
+        const result1 = provision.select(profiles, {
+            AppId: "org.nativescript.examples"
+        });
+        assert.equal(result1.eligable.length, 2);
+        assert.equal(result1.nonEligable.length, 0);
+    });
+
+    // This test need to be added in future.
+    it("can find profile by app-id, device udid and certificate");
 });
