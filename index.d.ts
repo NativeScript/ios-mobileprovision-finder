@@ -1,4 +1,3 @@
-/// <reference types="node" />
 export declare namespace provision {
     interface MobileProvision {
         Name: string;
@@ -55,7 +54,7 @@ export declare namespace provision {
     interface FileSystem {
         readdirSync(path: string): string[];
         /**
-         * Returns node Buffer in order to emulate the node fs.
+         * Returns node Buffer.
          */
         readFileSync(path: string): any;
     }

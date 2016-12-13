@@ -192,7 +192,10 @@ export namespace provision {
 
     export interface FileSystem {
         readdirSync(path: string): string[]
-        readFileSync(path: string): Buffer;
+        /**
+         * Returns node Buffer.
+         */
+        readFileSync(path: string): any;
     }
 }
 
