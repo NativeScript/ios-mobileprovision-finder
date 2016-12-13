@@ -2,6 +2,7 @@
 export declare namespace provision {
     interface MobileProvision {
         Name: string;
+        CreationDate: Date;
         ExpirationDate: Date;
         TeamName: string;
         TeamIdentifier: string[];
@@ -35,6 +36,12 @@ export declare namespace provision {
              */
             pem: string;
         }[];
+        /**
+         * Return provisining profiles with unique names.
+         * As a result if there are collisions, eligable ones will shadow the nonEligable, and if there are multiple eligable or multiple nonEligable only the one with the most recent CreationDate will be listed.
+         * Default is considered "true", set explcitly to "false" to list all results.
+         */
+        Unique?: boolean;
     }
     interface Result {
         eligable: MobileProvision[];
@@ -44,7 +51,7 @@ export declare namespace provision {
      * Read all provisioning profiles.
      */
     function read({readdirSync, readFileSync}?: FileSystem): MobileProvision[];
-    function select(mobileprovisions: MobileProvision[], {ExpirationDate, TeamName, AppId, ProvisionedDevices, Type, Certificates}: Query): Result;
+    function select(mobileprovisions: MobileProvision[], {ExpirationDate, TeamName, AppId, ProvisionedDevices, Type, Certificates, Unique}: Query): Result;
     interface FileSystem {
         readdirSync(path: string): string[];
         readFileSync(path: string): Buffer;

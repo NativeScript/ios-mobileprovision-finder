@@ -6,9 +6,9 @@ import { execSync } from "child_process";
 import * as sec_find_id from "./parsers/security-find-identity";
 import * as sec_find_cert from "./parsers/security-find-certificate";
 
-const nodefs: provision.FileSystem = { readdirSync, readFileSync };
-
 export namespace provision {
+
+    const nodefs: provision.FileSystem = { readdirSync, readFileSync };
 
     const defaultPath = join(process.env.HOME, "Library/MobileDevice/Provisioning Profiles/");
     const plistStartToken = new Buffer("<plist", "ascii");
@@ -16,6 +16,7 @@ export namespace provision {
 
     export interface MobileProvision {
         Name: string;
+        CreationDate: Date;
         ExpirationDate: Date;
         TeamName: string;
         TeamIdentifier: string[];
@@ -50,6 +51,12 @@ export namespace provision {
              */
             pem: string
         }[];
+        /**
+         * Return provisining profiles with unique names.
+         * As a result if there are collisions, eligable ones will shadow the nonEligable, and if there are multiple eligable or multiple nonEligable only the one with the most recent CreationDate will be listed.
+         * Default is considered "true", set explcitly to "false" to list all results.
+         */
+        Unique?: boolean;
     }
 
     export interface Result {
@@ -118,7 +125,8 @@ export namespace provision {
             AppId,
             ProvisionedDevices,
             Type,
-            Certificates
+            Certificates,
+            Unique = true
         }: Query): Result {
 
         let filter: ProvisionFilter = () => true;
@@ -147,10 +155,39 @@ export namespace provision {
             }
         })(filter);
 
-        return mobileprovisions.reduce((acc, next) => {
-            (filter(next) ? acc.eligable : acc.nonEligable).push(next);
-            return acc;
-        }, { eligable: [], nonEligable: [] });
+        const eligable: MobileProvision[] = [];
+        const nonEligable: MobileProvision[] = [];
+
+        mobileprovisions.forEach(prov => {
+            if (filter(prov)) {
+                eligable.push(prov)
+            } else {
+                nonEligable.push(prov);
+            }
+        });
+
+        if (Unique) {
+            const eligableMap: { [name: string]: MobileProvision } = {};
+            const nonEligableMap: { [name: string]: MobileProvision } = {};
+            eligable.forEach(next => {
+                const prev = eligableMap[next.Name];
+                if (!prev || prev.CreationDate < next.CreationDate) {
+                    eligableMap[next.Name] = next;
+                }
+            });
+            nonEligable.forEach(next => {
+                const prev = nonEligableMap[next.Name];
+                if (!eligableMap[next.Name] && (!prev || prev.CreationDate < next.CreationDate)) {
+                    nonEligableMap[next.Name] = next;
+                }
+            });
+            return {
+                eligable: Object.keys(eligableMap).map(name => eligableMap[name]),
+                nonEligable: Object.keys(nonEligableMap).map(name => nonEligableMap[name])
+            }
+        } else {
+            return { eligable, nonEligable };
+        }
     }
 
     export interface FileSystem {

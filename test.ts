@@ -218,4 +218,5 @@ describe("provision", function() {
 
     // This test need to be added in future.
     it("can find profile by app-id, device udid and certificate");
+    it("unique filters duplicates");
 });
