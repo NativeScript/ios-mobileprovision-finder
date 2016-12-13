@@ -54,7 +54,10 @@ export declare namespace provision {
     function select(mobileprovisions: MobileProvision[], {ExpirationDate, TeamName, AppId, ProvisionedDevices, Type, Certificates, Unique}: Query): Result;
     interface FileSystem {
         readdirSync(path: string): string[];
-        readFileSync(path: string): Buffer;
+        /**
+         * Returns node Buffer in order to emulate the node fs.
+         */
+        readFileSync(path: string): any;
     }
 }
 export declare namespace cert {
