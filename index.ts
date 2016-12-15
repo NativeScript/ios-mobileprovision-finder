@@ -10,7 +10,7 @@ export namespace provision {
 
     const nodefs: provision.FileSystem = { readdirSync, readFileSync };
 
-    const defaultPath = join(process.env.HOME, "Library/MobileDevice/Provisioning Profiles/");
+    const defaultPath = process && process.env && process.env.HOME ? join(process.env.HOME, "Library/MobileDevice/Provisioning Profiles/") : ".";
     const plistStartToken = new Buffer("<plist", "ascii");
     const plistEndToken = new Buffer("</plist>", "ascii");
 
