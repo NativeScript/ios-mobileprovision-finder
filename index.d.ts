@@ -20,7 +20,7 @@ export declare namespace provision {
          * Developer certificate PEMs in base64 string format.
          */
         DeveloperCertificates: string[];
-        Type: "Development" | "Distribution" | "AdHoc";
+        Type: "Development" | "Distribution" | "AdHoc" | "Enterprise";
     }
     interface Query {
         path?: string;
@@ -28,7 +28,7 @@ export declare namespace provision {
         TeamName?: string;
         AppId?: string;
         ProvisionedDevices?: string[];
-        Type?: "Development" | "Distribution" | "AdHoc";
+        Type?: "Development" | "Distribution" | "AdHoc" | "Enterprise";
         Certificates?: {
             /**
              * Certificate PEMs in base64 encoded string format.
@@ -50,6 +50,10 @@ export declare namespace provision {
      * Read all provisioning profiles.
      */
     function read({readdirSync, readFileSync}?: FileSystem): MobileProvision[];
+    /**
+     * Reads a provisioning profile.
+     */
+    function readFromFile(filePath: string, {readdirSync, readFileSync}?: FileSystem): MobileProvision;
     function select(mobileprovisions: MobileProvision[], {ExpirationDate, TeamName, AppId, ProvisionedDevices, Type, Certificates, Unique}: Query): Result;
     interface FileSystem {
         readdirSync(path: string): string[];
