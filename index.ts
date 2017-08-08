@@ -35,7 +35,7 @@ export namespace provision {
          * Developer certificate PEMs in base64 string format.
          */
         DeveloperCertificates: string[];
-        Type: "Development" | "Distribution" | "AdHoc";
+        Type: "Development" | "Distribution" | "AdHoc" | "Enterprise";
     }
 
     export interface Query {
@@ -44,7 +44,7 @@ export namespace provision {
         TeamName?: string;
         AppId?: string;
         ProvisionedDevices?: string[];
-        Type?: "Development" | "Distribution" | "AdHoc";
+        Type?: "Development" | "Distribution" | "AdHoc" | "Enterprise";
         Certificates?: {
             /**
              * Certificate PEMs in base64 encoded string format.
@@ -87,33 +87,49 @@ export namespace provision {
             .map<MobileProvision>(file => {
                 try {
                     const filePath = join(defaultPath, file);
-                    const fileContent = readFileSync(filePath);
-                    const plistStart = fileContent.indexOf(plistStartToken);
-                    const plistEnd = fileContent.indexOf(plistEndToken) + plistEndToken.length;
-                    if (plistStart >= 0 && plistStart < plistEnd) {
-                        const plistContent = fileContent.toString('utf-8', plistStart, plistEnd);
-                        const plistJson = plist.parse(plistContent);
-                        if (plistJson.DeveloperCertificates) {
-                            plistJson.DeveloperCertificates = plistJson.DeveloperCertificates.map(c => c.toString('base64'));
-                        }
-
-                        if (plistJson.ProvisionsAllDevices) {
-                            plistJson.Type = "AdHoc";
-                        } else if (!plistJson.ProvisionedDevices || !plistJson.ProvisionedDevices.length) {
-                            plistJson.Type = "Distribution";
-                        } else {
-                            plistJson.Type = "Development";
-                        }
-
-                        return plistJson;
-                    } else {
-                        return null;
-                    }
+                    return readFromFile(filePath, {readdirSync, readFileSync});
                 } catch(e) {
                     return null;
                 }
             })
             .filter(p => !!p);
+    }
+
+    /**
+     * Reads a provisioning profile.
+     */
+    export function readFromFile(filePath: string, {readdirSync, readFileSync}: FileSystem = nodefs): MobileProvision {
+        try {
+            const fileContent = readFileSync(filePath);
+            const plistStart = fileContent.indexOf(plistStartToken);
+            const plistEnd = fileContent.indexOf(plistEndToken) + plistEndToken.length;
+            if (plistStart >= 0 && plistStart < plistEnd) {
+                const plistContent = fileContent.toString('utf-8', plistStart, plistEnd);
+                const plistJson = plist.parse(plistContent);
+                if (plistJson.DeveloperCertificates) {
+                    plistJson.DeveloperCertificates = plistJson.DeveloperCertificates.map(c => c.toString('base64'));
+                }
+
+                if (plistJson.ProvisionsAllDevices) {
+                    plistJson.Type = "Enterprise";
+                } else if (plistJson.ProvisionedDevices && plistJson.ProvisionedDevices.length) {
+                    const entitlements = plistJson.Entitlements;
+                    if (entitlements["get-task-allow"]) {
+                        plistJson.Type = "Development";
+                    } else {
+                        plistJson.Type = "AdHoc";
+                    }
+                } else {
+                    plistJson.Type = "Distribution";
+                }
+
+                return plistJson;
+            } else {
+                return null;
+            }
+        } catch (e) {
+            return null;
+        }
     }
 
     type ProvisionFilter = (provision: MobileProvision) => boolean;

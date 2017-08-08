@@ -35,7 +35,8 @@ if (argv["type"] != 'all') {
     options.Type = {
         "development": "Development",
         "distribution": "Distribution",
-        "adhoc": "AdHoc"
+        "adhoc": "AdHoc",
+        "enterprise": "Enterprise"
     }[argv["type"]];
 }
 
