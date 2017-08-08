@@ -4,7 +4,7 @@
   "description": "API to find an iOS mobile provision",
   "main": "index.js",
   "scripts": {
-    "prepublish": "tsc && pegjs parsers/security-find-identity.pegjs && pegjs parsers/security-find-certificate.pegjs",
+    "prepare": "tsc && pegjs parsers/security-find-identity.pegjs && pegjs parsers/security-find-certificate.pegjs",
     "test": "tsc && mocha",
     "watch": "mocha-typescript-watch"
   },

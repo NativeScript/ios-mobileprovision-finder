@@ -29,7 +29,7 @@ function print(result: provision.Result) {
 }
 
 // These run end to end tests and run security tool and depend on the keychain, they will run only on mac. Consider running them during development.
-describe.skip("api", () => {
+describe("api", () => {
     describe("certificates", () => {
         it("list all", () => {
             const result = cert.read();
@@ -219,4 +219,5 @@ describe("provision", function() {
     // This test need to be added in future.
     it("can find profile by app-id, device udid and certificate");
     it("unique filters duplicates");
+    it("can parse a provisioning profile file");
 });
