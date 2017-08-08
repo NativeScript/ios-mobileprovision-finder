@@ -1,4 +1,9 @@
+*.pegjs
 *.ts
+*.tgz
 !*.d.ts
 tsconfig.json
 .vscode
+tests
+package
+package-lock.json
