@@ -51,7 +51,7 @@ const result = provision.select(profiles, options);
 
 const months = ["Jan", "Feb", "Marc", "Apr", "May", "June", "July", "Aug", "Sept", "Oct", "Nov", "Dec"];
 function formatDate(date: Date): string {
-    return `${date.getDay()} ${months[date.getMonth()]} ${date.getFullYear()}`;
+    return `${date.getDate()} ${months[date.getMonth()]} ${date.getFullYear()}`;
 }
 function formatProfile(profile: provision.MobileProvision): string {
     return "'" + chalk.bold(profile.Name) + "' " + profile.TeamName + " " + chalk.gray("(exp: " + formatDate(profile.ExpirationDate) + ") " + profile.UUID + " id: ") + profile.Entitlements["application-identifier"] + chalk.gray(" " + profile.Type);
