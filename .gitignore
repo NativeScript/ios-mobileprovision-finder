@@ -38,3 +38,8 @@ jspm_packages
 
 # We run on TypeScript and PEG.js
 *.js
+
+*.tgz
+package
+package-lock.json
+.DS_Store
