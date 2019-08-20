@@ -49,12 +49,12 @@ export declare namespace provision {
     /**
      * Read all provisioning profiles.
      */
-    function read({readdirSync, readFileSync}?: FileSystem): MobileProvision[];
+    function read({ readdirSync, readFileSync }?: FileSystem): MobileProvision[];
     /**
      * Reads a provisioning profile.
      */
-    function readFromFile(filePath: string, {readdirSync, readFileSync}?: FileSystem): MobileProvision;
-    function select(mobileprovisions: MobileProvision[], {ExpirationDate, TeamName, AppId, ProvisionedDevices, Type, Certificates, Unique}: Query): Result;
+    function readFromFile(filePath: string, { readdirSync, readFileSync }?: FileSystem): MobileProvision;
+    function select(mobileprovisions: MobileProvision[], { ExpirationDate, TeamName, AppId, ProvisionedDevices, Type, Certificates, Unique }: Query): Result;
     interface FileSystem {
         readdirSync(path: string): string[];
         /**

@@ -93,7 +93,7 @@ describe("security find-identity parse", () => {
     it("some", () => {
         const result = identitiesParse(fs.readFileSync("./tests/find-identity/some-found.txt").toString());
         assert.deepEqual({ policy: 'Code Signing',
-            matching: 
+            matching:
             [ { hash: '9D591A6ADAF9C99A9C19FC1A8EE7FA153C613441',
                 name: 'iPhone Distribution: Telerik AD' },
                 { hash: 'FAE6210D184FCC1707B87F1C582280A286898EE3',
@@ -108,7 +108,7 @@ describe("security find-identity parse", () => {
                 issue: 'CSSMERR_TP_CERT_REVOKED' },
                 { hash: '07AB20E16C86E2B548A91920B83EC27D78AFC7EB',
                 name: 'iPhone Developer: Panayot Cankov (3KZR3BE4ZD)' } ],
-            valid: 
+            valid:
             [ { hash: '9D591A6ADAF9C99A9C19FC1A8EE7FA153C613441',
                 name: 'iPhone Distribution: Telerik AD' },
                 { hash: 'FAE6210D184FCC1707B87F1C582280A286898EE3',
@@ -131,6 +131,12 @@ describe("security find-certificate parse", () => {
     it("some", () => {
         const result = certParse(fs.readFileSync("./tests/find-certificate/some-found.txt").toString());
         const expected = JSON.parse(fs.readFileSync("./tests/find-certificate/some-found.expected.json").toString());
+        assert.deepEqual(result, expected);
+    });
+
+    it("macOS Catalina, SHA256 in security output", () => {
+        const result = certParse(fs.readFileSync("./tests/find-certificate/some-found-security-macos-catalina.txt").toString());
+        const expected = JSON.parse(fs.readFileSync("./tests/find-certificate/some-found-security-macos-catalina.expected.json").toString());
         assert.deepEqual(result, expected);
     });
 });

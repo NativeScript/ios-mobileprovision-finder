@@ -38,3 +38,4 @@ jspm_packages
 
 # We run on TypeScript and PEG.js
 *.js
+*.js.map

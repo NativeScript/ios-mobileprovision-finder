@@ -1,6 +1,6 @@
 {
   "name": "ios-mobileprovision-finder",
-  "version": "1.0.10",
+  "version": "1.0.11",
   "description": "API to find an iOS mobile provision",
   "main": "index.js",
   "scripts": {
@@ -23,7 +23,7 @@
     "@types/chai-spies": "0.0.0",
     "@types/chalk": "^0.4.31",
     "@types/mocha": "^2.2.33",
-    "@types/node": "0.0.2",
+    "@types/node": "10.14.15",
     "@types/yargs": "^6.3.3",
     "chai": "^3.5.0",
     "chai-spies": "^0.7.1",
