@@ -12,7 +12,7 @@ Options:
                   profile should be able to deploy to.                   [array]
   -i, --app-id    Provide application bundle identifier the searched
                   provisioning profile should match.                    [string]
-  -e, --eligable  Prints only eligable profiles       [boolean] [default: false]
+  -e, --eligible  Prints only eligible profiles       [boolean] [default: false]
   -t, --team      Provide team name the provisioning profile should belong to.
                                                                         [string]
   -p, --type      'development', 'distribution', 'adhoc' or 'all'; - specify the
@@ -22,7 +22,7 @@ Options:
 Example:
 ```
 mcsofcankov:ios-mobileprovision-finder cankov$ ios-mobileprovision-finder -e -i org.nativescript.examples -t 'Telerik A D'
-eligable:
+eligible:
  - 'iOS Team Provisioning Profile: *' Telerik A D (exp: 5 Nov 2017) 16455071-eb38-4ebc-9a79-0ef50f76307a id: CHSQ3M3P37.* Development
  - 'NativeScriptWildCard' Telerik A D (exp: 2 Nov 2017) 3aa58a65-f8da-4c67-bce8-ff9624822e31 id: CHSQ3M3P37.* Development
  - 'iOS Team Provisioning Profile: org.nativescript.examples' Telerik A D (exp: 5 Nov 2017) f79232c0-b3b3-4b9d-be8e-f4f398cead88 id: CHSQ3M3P37.org.nativescript.examples Development
@@ -41,7 +41,7 @@ const result = provision.select(provisionProfiles, {
     TeamName: "Telerik AD",
     Certificates: certificates.valid
 });
-result.eligable.forEach(({Name, UUID}) => {
+result.eligible.forEach(({Name, UUID}) => {
     console.log(` - ${Name} ${UUID}`);
 });
 ```

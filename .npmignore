@@ -1,6 +1,0 @@
-*.ts
-!*.d.ts
-tsconfig.json
-.vscode
-.js.map
-tests
