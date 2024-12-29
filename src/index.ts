@@ -1,4 +1,4 @@
-import { readdirSync, readFileSync } from "fs";
+import { readdirSync, readFileSync, existsSync } from "fs";
 import { extname, join } from "path";
 import * as plist from "plist";
 import { execSync } from "child_process";
@@ -8,11 +8,22 @@ import * as sec_find_cert from "./parsers/security-find-certificate";
 
 export namespace provision {
   const nodefs = { readdirSync, readFileSync };
+  const profileSources: string[] = [
+    join(process.env.HOME, "Library", "Developer", "Xcode", "UserData", "Provisioning Profiles"),
+    join(process.env.HOME, "Library/MobileDevice/Provisioning Profiles/")
+                                   ]
+  const defaultPath: string[] = [];
+  if(process && process.env && process.env.HOME){
 
-  const defaultPath =
-    process && process.env && process.env.HOME
-      ? join(process.env.HOME, "Library/MobileDevice/Provisioning Profiles/")
-      : ".";
+    profileSources.forEach(pDir => {
+      if(existsSync(pDir)) {
+        defaultPath.push(pDir);
+      }
+    });    
+    
+  } else {
+    defaultPath.push(".");    
+  }
   const plistStartToken = Buffer.from("<plist", "ascii");
   const plistEndToken = Buffer.from("</plist>", "ascii");
 
@@ -94,12 +105,39 @@ export namespace provision {
     readdirSync,
     readFileSync,
   } = nodefs): MobileProvision[] {
-    return readdirSync(defaultPath)
+
+    if(defaultPath.length>0){
+      let prov16 = readDir({
+        readdirSync,
+        readFileSync,
+      }, defaultPath[0]);
+      for(let i=1;i<defaultPath.length;++i){
+          const pre16 = readDir({
+            readdirSync,
+            readFileSync,
+          }, defaultPath[i]);
+          prov16 = prov16.concat(pre16.filter(p=>prov16.findIndex((v) => v.UUID === p.UUID) === -1));
+      }
+      return prov16;
+    } else {
+      throw new Error(`No provisioning profile folder found tried:${profileSources}.`);
+    }
+  }
+
+  function readDir({
+    readdirSync,
+    readFileSync,
+  } = nodefs, path: string): MobileProvision[] {
+
+    return readdirSync(path)
       .filter((file) => extname(file) === ".mobileprovision")
       .map<MobileProvision>((file) => {
         try {
-          const filePath = join(defaultPath, file);
-          return readFromFile(filePath, { readdirSync, readFileSync });
+          const filePath = join(path, file);
+          return readFromFile(filePath, {
+            readdirSync,
+            readFileSync,
+          });
         } catch (e) {
           return null;
         }

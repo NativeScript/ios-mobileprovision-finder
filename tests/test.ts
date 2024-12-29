@@ -223,7 +223,8 @@ describe("provision", function () {
   it("looks at the default path", () => {
     let fs = {
       readdirSync(dir: string): string[] {
-        assert(dir.endsWith("Library/MobileDevice/Provisioning Profiles/"));
+        assert(dir.endsWith("Library/MobileDevice/Provisioning Profiles/") ||
+               dir.endsWith("Library/Developer/Xcode/UserData/Provisioning Profiles"));
         return [];
       },
       readFileSync(path: string): string {
@@ -234,7 +235,7 @@ describe("provision", function () {
     fs.readdirSync = spy;
     provision.read(fs as any);
 
-    chai.expect(spy).called.exactly(1);
+    chai.expect(spy).called.exactly(2);
   });
 
   let testfsMac1: any;
