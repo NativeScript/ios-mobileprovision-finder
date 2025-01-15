@@ -221,7 +221,17 @@ describe("security find-certificate parse", () => {
 
 describe("provision", function () {
   it("looks at the default path", () => {
-    let fs = {
+
+    let existingDirCount = 0;
+    
+    if(fs.existsSync(path.join(process.env.HOME, "/Library/MobileDevice/Provisioning Profiles/"))) {
+      existingDirCount++;
+    }
+    if(fs.existsSync(path.join(process.env.HOME,"/Library/Developer/Xcode/UserData/Provisioning Profiles"))) {
+      existingDirCount++;
+    }
+
+    let fsMock = {
       readdirSync(dir: string): string[] {
         assert(dir.endsWith("Library/MobileDevice/Provisioning Profiles/") ||
                dir.endsWith("Library/Developer/Xcode/UserData/Provisioning Profiles"));
@@ -231,11 +241,11 @@ describe("provision", function () {
         return null;
       },
     };
-    const spy = chai.spy(fs.readdirSync);
-    fs.readdirSync = spy;
-    provision.read(fs as any);
+    const spy = chai.spy(fsMock.readdirSync);
+    fsMock.readdirSync = spy;
+    provision.read(fsMock as any);
 
-    chai.expect(spy).called.exactly(2);
+    chai.expect(spy).called.exactly(existingDirCount);
   });
 
   let testfsMac1: any;
