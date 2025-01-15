@@ -8,12 +8,12 @@ import * as sec_find_cert from "./parsers/security-find-certificate";
 
 export namespace provision {
   const nodefs = { readdirSync, readFileSync };
-  const profileSources: string[] = [
+  const profileSources: string[] = (process && process.env && process.env.HOME) ? [
     join(process.env.HOME, "Library", "Developer", "Xcode", "UserData", "Provisioning Profiles"),
-    join(process.env.HOME, "Library/MobileDevice/Provisioning Profiles/")
-                                   ]
+    join(process.env.HOME, "Library/MobileDevice/Provisioning Profiles/")]:[];
+                                   
   const defaultPath: string[] = [];
-  if(process && process.env && process.env.HOME){
+  if(profileSources.length>0){
 
     profileSources.forEach(pDir => {
       if(existsSync(pDir)) {
